@@ -1,0 +1,45 @@
+version: '3.0'
+services:
+  nginx:
+    image: nginx:1.24
+    networks:
+      - network_DC
+    volumes:
+    - ./:/var/www/
+    - ./docker/nginx/:/etc/nginx/conf.d/
+    ports:
+    - 8080:80
+    depends_on:
+      - app
+    container_name: nginx_DC
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    networks:
+      - network_DC
+    volumes:
+    - ./:/var/www/
+    depends_on:
+      - db
+    container_name: app_DC
+
+  db:
+    image: mysql:8.0
+    networks:
+      - network_DC
+    restart: always
+    volumes:
+    - ./tmp/db:/var/lib/mysql
+    ports:
+    - 8081:3306
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    container_name: mysql_DC
+
+networks:
+  network_DC:
+    driver: bridge
+    name: network_DC
