@@ -17,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: docker/app/Dockerfile
+    image: app_dc
     networks:
       - network_DC
     volumes:
