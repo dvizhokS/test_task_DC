@@ -10,21 +10,34 @@ services:
     ports:
     - 8080:80
     depends_on:
-      - app
+      - backend
     container_name: nginx_DC
 
-  app:
+  frontend:
     build:
       context: .
-      dockerfile: docker/app/Dockerfile
-    image: app_dc
+      dockerfile: docker/frontend/Dockerfile
+    image: frontend_dc
+    networks:
+        - network_DC
+    ports:
+    - 8082:8082
+    volumes:
+    - ./:/var/www/
+    container_name: frontend_DC
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    image: backend_dc
     networks:
       - network_DC
     volumes:
     - ./:/var/www/
     depends_on:
       - db
-    container_name: app_DC
+    container_name: backend_DC
 
   db:
     image: mysql:8.0
